@@ -1354,7 +1354,7 @@ export default function Recipes() {
                   {frequentAddonFields.map((field, index) => {
                     const selectedId = Number(form.watch(`frequentAddons.${index}.ingredientId`));
                     return (
-                      <div key={field.id} className="bg-violet-50/60 p-2 rounded-xl border border-violet-100">
+                      <div key={field.id} className="bg-emerald-50/60 p-2 rounded-xl border border-emerald-100">
                         <div className="flex flex-col gap-2 lg:flex-row lg:items-end">
                           <div className="flex-1">
                             <Popover
@@ -1490,7 +1490,7 @@ export default function Recipes() {
                   })}
                   </div>
                 </div>
-                <Button type="button" variant="outline" size="sm" className="rounded-lg border-dashed w-full py-3 sm:py-5 border-2 hover:bg-violet-50 hover:border-violet-300 transition-all text-xs sm:text-sm" onClick={() => appendFrequentAddon({ ingredientId: 0, amount: 50, baseAmount: 50, defaultAmountA: 0, defaultAmountB: 50, unit: "g", alternativeAmount: undefined, alternativeUnit: "", scalingType: "LINEAR", scalingFormula: "", stepThresholds: [] })}>
+                <Button type="button" variant="outline" size="sm" className="rounded-lg border-dashed w-full py-3 sm:py-5 border-2 hover:bg-emerald-50 hover:border-emerald-300 transition-all text-xs sm:text-sm" onClick={() => appendFrequentAddon({ ingredientId: 0, amount: 50, baseAmount: 50, defaultAmountA: 0, defaultAmountB: 50, unit: "g", alternativeAmount: undefined, alternativeUnit: "", scalingType: "LINEAR", scalingFormula: "", stepThresholds: [] })}>
                   + Dodaj najczęsty dodatek
                 </Button>
               </div>
@@ -2209,7 +2209,7 @@ export default function Recipes() {
                 Zapisz jako wspólną partię (resztki na później)
               </label>
               {addToSharedBatches && (
-                <div className="rounded-lg border border-violet-200 bg-violet-50 px-3 py-2 text-xs text-violet-900">
+                <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-900">
                   <p>
                     To najlepszy tryb dla gotowania „na dwa dni” (np. kotlet → kanapka ze schabowym).
                   </p>
