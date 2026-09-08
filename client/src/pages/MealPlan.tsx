@@ -1903,13 +1903,13 @@ export default function MealPlan({ mode = "plan" }: { mode?: "plan" | "shared"; 
                 return acc;
               }, { A: 0, B: 0 });
               return (
-                <div key={batch.id} className="rounded-2xl border border-violet-200 bg-card p-4 shadow-sm">
+                <div key={batch.id} className="rounded-2xl border border-emerald-200 bg-card p-4 shadow-sm">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-start gap-3">
                       <div className="h-14 w-14 rounded-lg bg-muted bg-cover bg-center shrink-0" style={{ backgroundImage: `url(${imageUrl})` }} />
                       <div>
                         <p className="font-semibold">{batch.recipe?.name}</p>
-                        <p className="text-xs text-muted-foreground">Ugotowane: {Number(batch.totalServings) || 0} porcji • W planie: {Number(batch.allocatedServings) || 0} • Pozostało: <span className="font-semibold text-violet-700">{Number(batch.remainingServings) || 0}</span></p>
+                        <p className="text-xs text-muted-foreground">Ugotowane: {Number(batch.totalServings) || 0} porcji • W planie: {Number(batch.allocatedServings) || 0} • Pozostało: <span className="font-semibold text-emerald-700">{Number(batch.remainingServings) || 0}</span></p>
                         <p className="text-[11px] text-muted-foreground">Zjedzone/zaplanowane: Tysia {allocatedByPerson.A} • Mati {allocatedByPerson.B} porcji</p>
                         <p className="text-[11px] text-muted-foreground">
                           Porcje dodane na dni:{" "}
@@ -1974,12 +1974,12 @@ export default function MealPlan({ mode = "plan" }: { mode?: "plan" | "shared"; 
                   )}
 
                   {(batch?.recipe?.frequentAddons || []).length > 0 && (
-                    <div className="mt-3 rounded-xl border border-violet-200 bg-violet-50/50 p-3">
+                    <div className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50/50 p-3">
                       <div className="mb-2 flex items-center justify-between gap-2">
-                        <p className="text-xs font-semibold uppercase tracking-wider text-violet-700">Dodatki wspólne dla {personName[form.person]}</p>
+                        <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700">Dodatki wspólne dla {personName[form.person]}</p>
                         <button
                           type="button"
-                          className="text-xs font-medium text-violet-700 underline underline-offset-2"
+                          className="text-xs font-medium text-emerald-700 underline underline-offset-2"
                           onClick={() => setSelectedFrequentAddons((prev) => ({ ...prev, [form.person]: {} }))}
                         >
                           Wyczyść
@@ -1990,7 +1990,7 @@ export default function MealPlan({ mode = "plan" }: { mode?: "plan" | "shared"; 
                           const addonStep = getAddonBaseAmount(addon);
                           const currentAmount = Number(selectedFrequentAddons[form.person]?.[addon.ingredientId] || 0);
                           return (
-                            <div key={`shared-addon-${batch.id}-${form.person}-${addon.ingredientId}`} className="flex items-center justify-between gap-2 rounded-lg border border-violet-100 bg-white p-2">
+                            <div key={`shared-addon-${batch.id}-${form.person}-${addon.ingredientId}`} className="flex items-center justify-between gap-2 rounded-lg border border-emerald-100 bg-white p-2">
                               <span className="text-sm font-medium">{addon.ingredient?.name || "Składnik"}</span>
                               <div className="flex items-center gap-1">
                                 <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setAddonAmount(Number(addon.ingredientId), currentAmount - addonStep, form.person)}>
@@ -2210,8 +2210,8 @@ export default function MealPlan({ mode = "plan" }: { mode?: "plan" | "shared"; 
 
           <div className="flex-1 overflow-y-auto py-4 space-y-4">
             {frequentAddonDefinitions.length > 0 && (
-              <div className="rounded-xl border border-violet-200 bg-violet-50/60 p-3">
-                <p className="text-xs font-semibold uppercase tracking-wider text-violet-700">Najczęstsze dodatki (opcjonalnie)</p>
+              <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-3">
+                <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700">Najczęstsze dodatki (opcjonalnie)</p>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {frequentAddonDefinitions.map((addon: any) => {
                     const isAlreadyAdded = editingMealIngredients.some((item: any) => Number(item.ingredientId) === Number(addon.ingredientId) && item.isFrequentAddon);
@@ -2221,7 +2221,7 @@ export default function MealPlan({ mode = "plan" }: { mode?: "plan" | "shared"; 
                         type="button"
                         size="sm"
                         variant={isAlreadyAdded ? "secondary" : "outline"}
-                        className={cn("h-8", isAlreadyAdded && "border-violet-300 bg-violet-100 text-violet-900")}
+                        className={cn("h-8", isAlreadyAdded && "border-emerald-300 bg-emerald-100 text-emerald-900")}
                         onClick={() => addFrequentAddonToEdit(addon)}
                       >
                         + {Math.round(getAddonBaseAmount(addon))}g {addon.ingredient?.name || "Składnik"}
@@ -2237,7 +2237,7 @@ export default function MealPlan({ mode = "plan" }: { mode?: "plan" | "shared"; 
                 key={idx}
                 className={cn(
                   "flex gap-2 items-start bg-secondary/20 p-3 rounded-xl border border-transparent max-sm:gap-1.5 max-sm:p-2",
-                  item.isFrequentAddon && "border-violet-300 bg-violet-50/50"
+                  item.isFrequentAddon && "border-emerald-300 bg-emerald-50/50"
                 )}
               >
                 <div className="min-w-0 flex-1">
@@ -2284,7 +2284,7 @@ export default function MealPlan({ mode = "plan" }: { mode?: "plan" | "shared"; 
                     </PopoverContent>
                   </Popover>
                   {item.isFrequentAddon && (
-                    <span className="mt-1 inline-flex rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-semibold text-violet-800">
+                    <span className="mt-1 inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-800">
                       Najczęstszy dodatek
                     </span>
                   )}
@@ -2350,8 +2350,8 @@ export default function MealPlan({ mode = "plan" }: { mode?: "plan" | "shared"; 
 
           <div className="space-y-4 mt-2 sm:mt-4">
             {recommendedSharedBatches.length > 0 && (
-              <div className="rounded-xl border border-violet-200 bg-violet-50/40 p-3">
-                <p className="text-xs font-semibold uppercase tracking-wider text-violet-700">Polecane pozostałe porcje ze wspólnych posiłków</p>
+              <div className="rounded-xl border border-emerald-200 bg-emerald-50/40 p-3">
+                <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700">Polecane pozostałe porcje ze wspólnych posiłków</p>
                 <div className="mt-2 space-y-2">
                   {recommendedSharedBatches.map((batch: any) => {
                     const isSelectingAddons = selectedRecommendedBatchId === Number(batch.id);
@@ -2361,7 +2361,7 @@ export default function MealPlan({ mode = "plan" }: { mode?: "plan" | "shared"; 
                     ));
 
                     return (
-                      <div key={`recommended-batch-${batch.id}`} className="rounded-lg border border-violet-100 bg-white px-2 py-1.5">
+                      <div key={`recommended-batch-${batch.id}`} className="rounded-lg border border-emerald-100 bg-white px-2 py-1.5">
                         <div className="flex items-center justify-between gap-2">
                           <div>
                             <p className="text-sm font-medium">{batch.recipe?.name}</p>
@@ -2373,12 +2373,12 @@ export default function MealPlan({ mode = "plan" }: { mode?: "plan" | "shared"; 
                         </div>
 
                         {isSelectingAddons && (batch?.recipe?.frequentAddons || []).length > 0 && (
-                          <div className="mt-3 space-y-3 rounded-lg border border-violet-200 bg-violet-50/50 p-3">
+                          <div className="mt-3 space-y-3 rounded-lg border border-emerald-200 bg-emerald-50/50 p-3">
                             <div className="flex flex-wrap items-center justify-between gap-2">
-                              <p className="text-xs font-semibold uppercase tracking-wider text-violet-700">Opcjonalne dodatki dla {personName[selectedPerson]}</p>
+                              <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700">Opcjonalne dodatki dla {personName[selectedPerson]}</p>
                               <button
                                 type="button"
-                                className="text-xs font-medium text-violet-700 underline underline-offset-2"
+                                className="text-xs font-medium text-emerald-700 underline underline-offset-2"
                                 onClick={() => setSelectedFrequentAddons((prev) => ({ ...prev, [selectedPerson]: {} }))}
                               >
                                 Wyczyść
@@ -2394,7 +2394,7 @@ export default function MealPlan({ mode = "plan" }: { mode?: "plan" | "shared"; 
                                 return (
                                   <div key={`recommended-addon-${batch.id}-${selectedPerson}-${addon.ingredientId}`} className={cn(
                                     "flex flex-wrap items-center justify-between gap-2 rounded-lg border bg-white p-2 transition-colors",
-                                    currentAmount > 0 ? "border-violet-200" : "border-violet-100"
+                                    currentAmount > 0 ? "border-emerald-200" : "border-emerald-100"
                                   )}>
                                     <span className="text-sm font-medium">{addon.ingredient?.name || "Składnik"}</span>
                                     <div className="flex items-center gap-1">
@@ -2541,11 +2541,11 @@ export default function MealPlan({ mode = "plan" }: { mode?: "plan" | "shared"; 
                   <Input type="number" step="0.25" min={0.25} value={selectedRecipeServings} onChange={(e) => setSelectedRecipeServings(Math.max(0.25, Number(e.target.value) || 1))} className="h-8 w-28" />
                 </div>
                 {selectedRecipeNutritionPreview && (
-                  <div className="rounded-lg border border-violet-200 bg-violet-50/50 px-3 py-2">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-violet-800">
+                  <div className="rounded-lg border border-emerald-200 bg-emerald-50/50 px-3 py-2">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-emerald-800">
                       Makro i kcal dla {selectedRecipeServings} porcji
                     </p>
-                    <p className="mt-1 text-sm text-violet-950">
+                    <p className="mt-1 text-sm text-emerald-950">
                       {selectedRecipeNutritionPreview.calories} kcal • B: {selectedRecipeNutritionPreview.protein} g • W: {selectedRecipeNutritionPreview.carbs} g • T: {selectedRecipeNutritionPreview.fat} g
                     </p>
                   </div>
@@ -2613,7 +2613,7 @@ export default function MealPlan({ mode = "plan" }: { mode?: "plan" | "shared"; 
                           <button
                             type="button"
                             onClick={() => increaseAddonAmount(addon, selectedPerson)}
-                            className="min-w-0 max-w-full rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-sm font-medium text-violet-800 transition-colors hover:bg-violet-100 break-words"
+                            className="min-w-0 max-w-full rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-800 transition-colors hover:bg-emerald-100 break-words"
                           >
                             + {Math.round(getAddonBaseAmount(addon))}g {addon.ingredient?.name || "Składnik"}
                           </button>
@@ -2644,7 +2644,7 @@ export default function MealPlan({ mode = "plan" }: { mode?: "plan" | "shared"; 
                             key={`selected-${addon.ingredientId}`}
                             className={cn(
                               "space-y-2 rounded-lg border bg-white p-2 transition-colors",
-                              selectedAmountA > 0 || selectedAmountB > 0 ? "border-violet-200" : "border-border"
+                              selectedAmountA > 0 || selectedAmountB > 0 ? "border-emerald-200" : "border-border"
                             )}
                           >
                             <span className="text-sm font-medium sm:min-w-[140px]">
@@ -2723,8 +2723,8 @@ export default function MealPlan({ mode = "plan" }: { mode?: "plan" | "shared"; 
                 </label>
 
                 {addRecipeToSharedBatches && (
-                  <div className="grid gap-2 rounded-lg border border-violet-200 bg-violet-50/50 px-3 py-2">
-                    <label className="text-xs font-medium text-violet-900">Ile porcji dodać do zakładki „Wspólnych”?</label>
+                  <div className="grid gap-2 rounded-lg border border-emerald-200 bg-emerald-50/50 px-3 py-2">
+                    <label className="text-xs font-medium text-emerald-900">Ile porcji dodać do zakładki „Wspólnych”?</label>
                     <Input
                       type="number"
                       step="0.25"
@@ -2831,15 +2831,15 @@ export default function MealPlan({ mode = "plan" }: { mode?: "plan" | "shared"; 
             </div>
 
             {selectedIngredientForQuickAdd && (
-              <div className="rounded-lg border border-violet-500/40 bg-violet-500/10 px-3 py-2 text-sm">
-                <p className="font-semibold text-violet-700 dark:text-violet-300">{selectedIngredientForQuickAdd.name}</p>
+              <div className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-2 text-sm">
+                <p className="font-semibold text-emerald-700 dark:text-emerald-300">{selectedIngredientForQuickAdd.name}</p>
                 {selectedIngredientNutritionPreview && (
                   <p className="text-foreground">
                     Dla {Math.max(0, ingredientAmount)} g: {selectedIngredientNutritionPreview.calories} kcal • B: {selectedIngredientNutritionPreview.protein} g • W: {selectedIngredientNutritionPreview.carbs} g • T: {selectedIngredientNutritionPreview.fat} g
                   </p>
                 )}
                 {Number(selectedIngredientForQuickAdd?.unitWeight || 0) > 0 && (
-                  <p className="text-xs text-violet-700 dark:text-violet-300">
+                  <p className="text-xs text-emerald-700 dark:text-emerald-300">
                     {selectedIngredientForQuickAdd.unitDescription ? `${selectedIngredientForQuickAdd.unitDescription} • ` : ""}
                     1 szt. ≈ {selectedIngredientForQuickAdd.unitWeight} g
                   </p>
@@ -2848,7 +2848,7 @@ export default function MealPlan({ mode = "plan" }: { mode?: "plan" | "shared"; 
             )}
 
             <Button
-              className="w-full bg-violet-600 hover:bg-violet-700"
+              className="w-full bg-emerald-600 hover:bg-emerald-700"
               onClick={handleAddIngredient}
               disabled={!selectedIngredientId || ingredientAmount <= 0}
             >
@@ -3408,7 +3408,7 @@ function DaySection({ day, sectionId, recipes, userSettings, allAvailableIngredi
                       }}
                       className={cn(
                         "flex flex-col rounded-xl border border-border/60 bg-white p-2.5 shadow-sm transition-colors",
-                        dragOverSlot === `${person}-${mealType}` && (isCopyDragging ? "border-violet-500/70 bg-violet-50" : "border-primary/70 bg-primary/5"),
+                        dragOverSlot === `${person}-${mealType}` && (isCopyDragging ? "border-emerald-500/70 bg-emerald-50" : "border-primary/70 bg-primary/5"),
                         touchMoveEntry?.id && (touchMoveEntry.mode === "copy" ? "cursor-copy" : "cursor-move")
                       )}
                     >
@@ -3417,7 +3417,7 @@ function DaySection({ day, sectionId, recipes, userSettings, allAvailableIngredi
                           {mealTypeLabels[mealType] || mealType}
                         </h3>
                         <div className="flex gap-1">
-                          <Button variant="ghost" size="icon" className="h-6 w-6 text-violet-600 hover:text-violet-700 hover:bg-violet-50" onClick={() => onAddIngredient(mealType, dateStr, person)} title="Dodaj składnik">
+                          <Button variant="ghost" size="icon" className="h-6 w-6 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50" onClick={() => onAddIngredient(mealType, dateStr, person)} title="Dodaj składnik">
                             <Carrot className="w-3.5 h-3.5" />
                           </Button>
                           <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-primary" onClick={() => onAddCustom(mealType, dateStr, person)} title="Add Custom">
@@ -3449,10 +3449,10 @@ function DaySection({ day, sectionId, recipes, userSettings, allAvailableIngredi
                             className={cn(
                               "group relative flex flex-col gap-1.5 overflow-hidden rounded-lg border p-1.5 transition-colors",
                               entry.isEaten
-                                ? "bg-violet-100 border-violet-300"
+                                ? "bg-emerald-100 border-emerald-300"
                                 : "bg-background border-border",
                               draggedEntryId === Number(entry.id) && "opacity-60",
-                              touchMoveEntry?.id === Number(entry.id) && (touchMoveEntry.mode === "copy" ? "ring-2 ring-violet-500/60" : "ring-2 ring-primary/60"),
+                              touchMoveEntry?.id === Number(entry.id) && (touchMoveEntry.mode === "copy" ? "ring-2 ring-emerald-500/60" : "ring-2 ring-primary/60"),
                             )}
                           >
                             <div className="flex min-w-0 items-start gap-1.5">
@@ -3511,8 +3511,8 @@ function DaySection({ day, sectionId, recipes, userSettings, allAvailableIngredi
                                   type="button"
                                   onClick={() => setTouchMoveEntry((prev: any) => (prev?.id === Number(entry.id) && prev?.mode === "copy" ? null : { id: Number(entry.id), date: String(entry.date || dateStr), mode: "copy", entry }))}
                                   className={cn(
-                                    "hidden rounded-md p-1 text-muted-foreground hover:bg-violet-50 hover:text-violet-700 md:inline-flex",
-                                    touchMoveEntry?.id === Number(entry.id) && touchMoveEntry.mode === "copy" && "bg-violet-50 text-violet-700"
+                                    "hidden rounded-md p-1 text-muted-foreground hover:bg-emerald-50 hover:text-emerald-700 md:inline-flex",
+                                    touchMoveEntry?.id === Number(entry.id) && touchMoveEntry.mode === "copy" && "bg-emerald-50 text-emerald-700"
                                   )}
                                   title="Duplikuj: kliknij, potem stuknij slot docelowy"
                                   aria-label="Duplikuj posiłek do innego slotu"
@@ -3586,7 +3586,7 @@ function DaySection({ day, sectionId, recipes, userSettings, allAvailableIngredi
                                   onClick={(event) => handleEatenButtonClick(event, entry)}
                                   className={cn(
                                     "-mr-2 flex h-10 w-10 shrink-0 select-none items-center justify-center rounded-full transition-colors touch-manipulation active:bg-primary/10 sm:mr-0 sm:h-7 sm:w-7",
-                                    entry.isEaten ? "bg-violet-200 text-violet-800" : "text-muted-foreground hover:bg-muted"
+                                    entry.isEaten ? "bg-emerald-200 text-emerald-800" : "text-muted-foreground hover:bg-muted"
                                   )}
                                   aria-label={entry.isEaten ? "Oznacz jako niezjedzone" : "Oznacz jako zjedzone"}
                                 >
@@ -3715,7 +3715,7 @@ function DaySection({ day, sectionId, recipes, userSettings, allAvailableIngredi
                 onClick={() => setMobileTransferForm((prev) => ({ ...prev, mode: "copy" }))}
                 className={cn(
                   "flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-colors",
-                  mobileTransferForm.mode === "copy" ? "bg-background text-violet-700 shadow-sm" : "text-muted-foreground"
+                  mobileTransferForm.mode === "copy" ? "bg-background text-emerald-700 shadow-sm" : "text-muted-foreground"
                 )}
               >
                 <Copy className="h-4 w-4" />

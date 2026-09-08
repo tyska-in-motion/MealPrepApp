@@ -521,7 +521,7 @@ export default function Summary() {
             <section className="grid grid-cols-1 gap-4 xl:grid-cols-2">
               <div className="rounded-2xl border bg-card p-4 shadow-sm">
                 <h2 className="mb-3 flex items-center gap-2 text-lg font-semibold">
-                  <Carrot className="h-5 w-5 text-violet-600" /> Najczęściej używane składniki
+                  <Carrot className="h-5 w-5 text-emerald-600" /> Najczęściej używane składniki
                 </h2>
                 <div className="mb-3 grid grid-cols-1 gap-2 md:grid-cols-2">
                   <Select value={ingredientCategoryFilter} onValueChange={setIngredientCategoryFilter}>
@@ -631,7 +631,7 @@ export default function Summary() {
                         const calorieStatus = caloriePercentage < 95
                           ? { label: "poniżej celu", barClassName: "bg-amber-400", rowClassName: "border-amber-200 bg-amber-50/70 dark:border-amber-500/40 dark:bg-amber-500/15" }
                           : caloriePercentage <= 105
-                            ? { label: "w celu", barClassName: "bg-violet-500", rowClassName: "border-violet-200 bg-violet-50/70 dark:border-violet-500/40 dark:bg-violet-500/15" }
+                            ? { label: "w celu", barClassName: "bg-emerald-500", rowClassName: "border-emerald-200 bg-emerald-50/70 dark:border-emerald-500/40 dark:bg-emerald-500/15" }
                             : { label: "powyżej celu", barClassName: "bg-red-500", rowClassName: "border-red-200 bg-red-50/70 dark:border-red-500/45 dark:bg-red-500/15" };
 
                         return (
