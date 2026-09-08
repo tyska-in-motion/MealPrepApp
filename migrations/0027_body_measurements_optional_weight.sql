@@ -1,0 +1,1 @@
+ALTER TABLE IF EXISTS body_measurements ALTER COLUMN weight DROP NOT NULL;
