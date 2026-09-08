@@ -102,6 +102,7 @@ export const recipes = pgTable("recipes", {
 });
 
 export const ingredientScalingTypeEnum = pgEnum("ingredient_scaling_type", ["LINEAR", "FIXED", "STEP", "FORMULA"]);
+export const portionModeEnum = pgEnum("portion_mode", ["SCALED", "INDIVIDUAL", "BATCH_ALLOCATION"]);
 
 export const recipeIngredients = pgTable("recipe_ingredients", {
   id: serial("id").primaryKey(),
@@ -180,6 +181,8 @@ export const mealEntries = pgTable("meal_entries", {
   mealType: text("meal_type").notNull(), // breakfast, lunch, dinner, snack
   person: text("person").notNull().default("A"), // A or B
   servings: real("servings").notNull().default(1),
+  portionMode: portionModeEnum("portion_mode").notNull().default("SCALED"),
+  allocationPercentage: real("allocation_percentage"),
   cookedBatchId: integer("cooked_batch_id"),
   recipeSnapshot: jsonb("recipe_snapshot").$type<RecipeSnapshot>(),
 
@@ -191,7 +194,9 @@ export const mealEntryIngredients = pgTable("meal_entry_ingredients", {
   id: serial("id").primaryKey(),
   mealEntryId: integer("meal_entry_id").notNull(),
   ingredientId: integer("ingredient_id").notNull(),
-  amount: integer("amount").notNull(),
+  amount: real("amount").notNull(),
+  // Null means use the scaled recipe amount; a value is a person-specific final amount.
+  overrideAmount: real("override_amount"),
   scalingType: ingredientScalingTypeEnum("scaling_type").notNull().default("LINEAR"),
 });
 

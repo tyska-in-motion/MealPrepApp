@@ -606,6 +606,11 @@ export async function ensureDbCompat() {
 
   await pool.query(`ALTER TABLE meal_entries ADD COLUMN IF NOT EXISTS cooked_batch_id integer`);
   await pool.query(`ALTER TABLE meal_entries ADD COLUMN IF NOT EXISTS recipe_snapshot jsonb`);
+  await pool.query(`DO $$ BEGIN CREATE TYPE portion_mode AS ENUM ('SCALED', 'INDIVIDUAL', 'BATCH_ALLOCATION'); EXCEPTION WHEN duplicate_object THEN NULL; END $$`);
+  await pool.query(`ALTER TABLE meal_entries ADD COLUMN IF NOT EXISTS portion_mode portion_mode NOT NULL DEFAULT 'SCALED'`);
+  await pool.query(`ALTER TABLE meal_entries ADD COLUMN IF NOT EXISTS allocation_percentage real`);
+  await pool.query(`ALTER TABLE meal_entry_ingredients ADD COLUMN IF NOT EXISTS override_amount real`);
+  await pool.query(`ALTER TABLE meal_entry_ingredients ALTER COLUMN amount TYPE real USING amount::real`);
   await pool.query(`ALTER TABLE shared_meal_batches ADD COLUMN IF NOT EXISTS recipe_snapshot jsonb`);
 
   await pool.query(`CREATE TABLE IF NOT EXISTS shared_meal_batch_logs (

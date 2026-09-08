@@ -5,6 +5,7 @@ import { api } from "@shared/routes";
 import { z } from "zod";
 import { insertRecipeSchema, insertMealEntrySchema, insertIngredientSchema } from "@shared/schema";
 import { calculateNutritionAmount, calculatePurchaseAmount, calculateScaledAmount } from "@shared/scaling";
+import { calculatePreparedIngredientAmount, getPortionMode } from "@shared/meal-portions";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -103,6 +104,13 @@ function resolveIngredientForScaling(entry: any, ingredientRow: any, occurrenceT
   };
 }
 
+function calculateEntryIngredientAmount(entry: any, ingredient: any, occurrenceTracker?: Map<number, number>) {
+  const recipeServings = Number(entry?.recipe?.servings) > 0 ? Number(entry.recipe.servings) : 1;
+  const requestedServings = Number(entry?.servings) > 0 ? Number(entry.servings) : 1;
+  const resolved = resolveIngredientForScaling(entry, ingredient, occurrenceTracker);
+  return calculatePreparedIngredientAmount({ ...resolved, overrideAmount: ingredient?.overrideAmount }, requestedServings, recipeServings);
+}
+
 
 
 // Extend Request type for multer
@@ -147,7 +155,7 @@ function calculateEntryTotals(entry: any) {
     const occurrenceTracker = new Map<number, number>();
     ingredientsToUse.forEach((ri: any) => {
       if (!ri.ingredient) return;
-      const scaledAmount = calculateScaledAmount(resolveIngredientForScaling(entry, ri, occurrenceTracker), entryServings, recipeServings);
+      const scaledAmount = calculateEntryIngredientAmount(entry, ri, occurrenceTracker);
       const nutritionAmount = calculateNutritionAmount(scaledAmount, ri.ingredient);
       const purchaseAmount = calculatePurchaseAmount(scaledAmount, ri.ingredient);
       const multiplier = nutritionAmount / 100;
@@ -774,7 +782,7 @@ export async function registerRoutes(
         const occurrenceTracker = new Map<number, number>();
         ingredientsToUse.forEach(ri => {
           if (!ri.ingredient) return;
-          const scaledAmount = calculateScaledAmount(resolveIngredientForScaling(entry, ri, occurrenceTracker), entryServings, recipeServings);
+          const scaledAmount = calculateEntryIngredientAmount(entry, ri, occurrenceTracker);
           const nutritionAmount = calculateNutritionAmount(scaledAmount, ri.ingredient);
           const purchaseAmount = calculatePurchaseAmount(scaledAmount, ri.ingredient);
           const multiplier = nutritionAmount / 100;
@@ -801,7 +809,7 @@ export async function registerRoutes(
           const occurrenceTracker = new Map<number, number>();
           return (entry.ingredients || []).map((ri: any) => ({
             ...ri,
-            calculatedAmount: calculateScaledAmount(resolveIngredientForScaling(entry, ri, occurrenceTracker), entryServings, recipeServings),
+            calculatedAmount: calculateEntryIngredientAmount(entry, ri, occurrenceTracker),
           }));
         })(),
         recipe: entry.recipe
@@ -811,7 +819,7 @@ export async function registerRoutes(
                 const occurrenceTracker = new Map<number, number>();
                 return (entry.recipe.ingredients || []).map((ri: any) => ({
                   ...ri,
-                  calculatedAmount: calculateScaledAmount(resolveIngredientForScaling(entry, ri, occurrenceTracker), entryServings, recipeServings),
+                  calculatedAmount: calculateEntryIngredientAmount(entry, ri, occurrenceTracker),
                 }));
               })(),
             }
@@ -957,7 +965,7 @@ export async function registerRoutes(
       
       // Ensure we only pass fields that exist in the schema to storage.updateMealEntry
       const finalUpdates: any = {};
-      const allowedFields = ['servings', 'isEaten', 'person', 'customName', 'customCalories', 'customProtein', 'customCarbs', 'customFat', 'date', 'mealType', 'cookedBatchId'];
+      const allowedFields = ['servings', 'portionMode', 'allocationPercentage', 'isEaten', 'person', 'customName', 'customCalories', 'customProtein', 'customCarbs', 'customFat', 'date', 'mealType', 'cookedBatchId'];
       
       for (const field of allowedFields) {
         if (updates[field] !== undefined) {
@@ -1063,13 +1071,7 @@ export async function registerRoutes(
 
     const safeScaledAmount = (entry: any, ri: any, occurrenceTracker: Map<number, number>) => {
       try {
-        const entryServings = Number(entry?.servings) > 0 ? Number(entry.servings) : 1;
-        const recipeServings = Number(entry?.recipe?.servings) > 0 ? Number(entry?.recipe?.servings) : 1;
-        const amount = calculateScaledAmount(
-          resolveIngredientForScaling(entry, ri, occurrenceTracker),
-          entryServings,
-          recipeServings,
-        );
+        const amount = calculateEntryIngredientAmount(entry, ri, occurrenceTracker);
         return Number.isFinite(amount) && amount >= 0 ? amount : 0;
       } catch (error) {
         console.warn("Skipping invalid shopping-list ingredient scaling", {
@@ -1096,7 +1098,9 @@ export async function registerRoutes(
       dailyAmounts: Map<string, number>;
     }>();
 
-    for (const entry of entries.filter((item) => item.isEaten !== true)) {
+    // A BATCH_ALLOCATION entry is a recipient, not another recipe to cook.
+    // Its batch below is counted exactly once at prepared-batch quantity.
+    for (const entry of entries.filter((item) => item.isEaten !== true && getPortionMode((item as any).portionMode) !== "BATCH_ALLOCATION")) {
       const entryIngredients = (entry.ingredients || []).filter((ri: any) => !!ri?.ingredient);
       const recipeIngredientsFromRange = [
         ...(entry.recipe?.ingredients || []),

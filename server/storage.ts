@@ -71,7 +71,7 @@ export interface IStorage {
   setStatsDayExclusion(date: string, reason?: string): Promise<void>;
   getAppState(key: string): Promise<any>;
   setAppState(key: string, data: any): Promise<any>;
-  updateMealEntryIngredients(mealEntryId: number, ingredients: { ingredientId: number; amount: number; scalingType?: "LINEAR" | "FIXED" | "STEP" | "FORMULA" }[]): Promise<void>;
+  updateMealEntryIngredients(mealEntryId: number, ingredients: { ingredientId: number; amount: number; overrideAmount?: number | null; scalingType?: "LINEAR" | "FIXED" | "STEP" | "FORMULA" }[]): Promise<void>;
   copyDayEntries(sourceDate: string, targetDate: string, replaceTarget?: boolean): Promise<number>;
 
   // Shared meal batches
@@ -1012,19 +1012,20 @@ export class DatabaseStorage implements IStorage {
       }
     }
 
+    const portionMode = entryData.portionMode || "SCALED";
     if (entryData.recipeId && !cookedBatchId) {
       const recipe = await this.getRecipe(Number(entryData.recipeId));
       const recipeServings = Number(recipe?.servings) || 1;
       const requestedServings = Number(entryData.servings) || 1;
       const settings = await this.getUserSettings();
       const manualOnly = !!settings?.A?.sharedBatchesManualOnly;
-      const shouldCreateSharedBatch = createSharedBatch ?? !manualOnly;
+      const shouldCreateSharedBatch = portionMode === "BATCH_ALLOCATION" || createSharedBatch === true || (!manualOnly && createSharedBatch !== false);
 
       if (recipe) {
         const activeBatches = await this.getSharedMealBatches();
         const existingBatch = activeBatches.find((batch: any) => (
           Number(batch.recipeId) === Number(entryData.recipeId)
-          && Number(batch.remainingServings || 0) >= requestedServings
+          && (portionMode === "BATCH_ALLOCATION" || Number(batch.remainingServings || 0) >= requestedServings)
         ));
 
         if (existingBatch) {
@@ -1047,6 +1048,7 @@ export class DatabaseStorage implements IStorage {
 
     const [newEntry] = await db.insert(mealEntries).values({
       ...entryData,
+      portionMode,
       cookedBatchId,
       recipeSnapshot,
     }).returning();
@@ -1059,7 +1061,7 @@ export class DatabaseStorage implements IStorage {
           recipe.ingredients.map(ri => ({
             mealEntryId: newEntry.id,
             ingredientId: ri.ingredientId,
-            amount: Math.round(Number(ri.baseAmount ?? ri.amount) || 0), // immutable base snapshot
+            amount: Number(ri.baseAmount ?? ri.amount) || 0, // immutable base snapshot; no calculation rounding
             scalingType: ri.scalingType || "LINEAR"
           }))
         );
@@ -1080,7 +1082,7 @@ export class DatabaseStorage implements IStorage {
     return updated;
   }
 
-  async updateMealEntryIngredients(mealEntryId: number, ingredientsList: { ingredientId: number; amount: number; scalingType?: "LINEAR" | "FIXED" | "STEP" | "FORMULA" }[]): Promise<void> {
+  async updateMealEntryIngredients(mealEntryId: number, ingredientsList: { ingredientId: number; amount: number; overrideAmount?: number | null; scalingType?: "LINEAR" | "FIXED" | "STEP" | "FORMULA" }[]): Promise<void> {
     await db.transaction(async (tx) => {
       // Delete existing and insert new in one transaction
       await tx.delete(mealEntryIngredients).where(eq(mealEntryIngredients.mealEntryId, mealEntryId));
@@ -1090,6 +1092,7 @@ export class DatabaseStorage implements IStorage {
             mealEntryId,
             ingredientId: i.ingredientId,
             amount: i.amount,
+            overrideAmount: i.overrideAmount ?? null,
             scalingType: i.scalingType || "LINEAR"
           }))
         );

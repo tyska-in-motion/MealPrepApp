@@ -362,6 +362,8 @@ export default function Dashboard() {
       .map(i => ({
         ingredientId: Number(i.ingredientId),
         amount: Number(i.amount) || 0,
+        // In individual mode this is the final amount for this person, not a new recipe base.
+        overrideAmount: viewingMeal?.portionMode === "INDIVIDUAL" ? (Number(i.amount) || 0) : null,
         scalingType: "FIXED",
       }));
 
