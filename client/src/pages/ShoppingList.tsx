@@ -686,7 +686,7 @@ export default function ShoppingList() {
                             )}
                           </div>
                           {item.isExtra && (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 font-semibold">Dodatkowe</span>
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-violet-100 text-violet-700 font-semibold">Dodatkowe</span>
                           )}
                         </div>
                         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-end sm:gap-2 sm:shrink-0">
@@ -756,7 +756,7 @@ export default function ShoppingList() {
                           </div>
                           <span className="text-sm text-muted-foreground line-through truncate">{item.name}</span>
                           {item.isExtra && (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 font-semibold">Dodatkowe</span>
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-violet-100 text-violet-700 font-semibold">Dodatkowe</span>
                           )}
                         </div>
                         <span className="text-xs font-mono text-muted-foreground bg-secondary px-1.5 py-0.5 rounded">

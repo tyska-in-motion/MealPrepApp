@@ -1190,8 +1190,8 @@ export default function Dashboard() {
                       </PopoverContent>
                     </Popover>
                     {quickRecipeNutritionPreview && (
-                      <div className="mt-2 rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-2 text-sm">
-                        <p className="font-semibold text-emerald-700 dark:text-emerald-300">
+                      <div className="mt-2 rounded-lg border border-violet-500/40 bg-violet-500/10 px-3 py-2 text-sm">
+                        <p className="font-semibold text-violet-700 dark:text-violet-300">
                           Makro i kcal dla ~{quickRecipeServings} porcji
                         </p>
                         <p className="text-foreground">
@@ -1242,15 +1242,15 @@ export default function Dashboard() {
                       <Input type="number" min={1} value={quickIngredientAmount} onChange={(e) => setQuickIngredientAmount(Number(e.target.value) || 0)} />
                     </div>
                     {selectedQuickIngredient && (
-                      <div className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-2 text-sm">
-                        <p className="font-semibold text-emerald-700 dark:text-emerald-300">{selectedQuickIngredient.name}</p>
+                      <div className="rounded-lg border border-violet-500/40 bg-violet-500/10 px-3 py-2 text-sm">
+                        <p className="font-semibold text-violet-700 dark:text-violet-300">{selectedQuickIngredient.name}</p>
                         {quickIngredientNutritionPreview && (
                           <p className="text-foreground">
                             Dla {Math.max(0, quickIngredientAmount)} g: {quickIngredientNutritionPreview.calories} kcal • B: {quickIngredientNutritionPreview.protein} g • W: {quickIngredientNutritionPreview.carbs} g • T: {quickIngredientNutritionPreview.fat} g
                           </p>
                         )}
                         {Number(selectedQuickIngredient?.unitWeight || 0) > 0 && (
-                          <p className="text-xs text-emerald-700 dark:text-emerald-300">
+                          <p className="text-xs text-violet-700 dark:text-violet-300">
                             {selectedQuickIngredient.unitDescription ? `${selectedQuickIngredient.unitDescription} • ` : ""}
                             1 szt. ≈ {selectedQuickIngredient.unitWeight} g
                           </p>
@@ -1427,7 +1427,7 @@ export default function Dashboard() {
           <h2 className="text-2xl font-bold">Menu na {isToday ? "dziś" : format(date, "eeee", { locale: pl })}</h2>
           <div className="flex items-center gap-4">
             <Link href="/meal-plan#shared-meals">
-              <span className="text-emerald-700 text-sm font-semibold hover:underline cursor-pointer">Wspólne posiłki</span>
+              <span className="text-violet-700 text-sm font-semibold hover:underline cursor-pointer">Wspólne posiłki</span>
             </Link>
             <Link href={`/meal-plan?date=${dateStr}`}>
               <span className="text-primary text-sm font-semibold hover:underline cursor-pointer">Edytuj Plan</span>
@@ -1464,11 +1464,11 @@ export default function Dashboard() {
                   </div>
 
                   {sharedCookCards.length > 0 && (
-                    <div className="rounded-2xl border border-emerald-200/70 bg-emerald-50/50 p-4">
+                    <div className="rounded-2xl border border-violet-200/70 bg-violet-50/50 p-4">
                       <div className="flex items-center justify-between gap-2 mb-3">
-                        <h3 className="text-sm font-extrabold uppercase tracking-wider text-emerald-800">GOTUJEMY: dziś i jutro</h3>
+                        <h3 className="text-sm font-extrabold uppercase tracking-wider text-violet-800">GOTUJEMY: dziś i jutro</h3>
                         <Link href="/meal-plan#shared-meals">
-                          <span className="text-xs font-semibold text-emerald-700 hover:underline cursor-pointer">Zobacz wszystkie wspólne</span>
+                          <span className="text-xs font-semibold text-violet-700 hover:underline cursor-pointer">Zobacz wszystkie wspólne</span>
                         </Link>
                       </div>
                       <div className="grid gap-2 sm:grid-cols-2">
@@ -1504,7 +1504,7 @@ export default function Dashboard() {
                               setDisableRecipeScaling(true);
                               setUsePrecalculatedIngredientAmounts(true);
                             }}
-                            className="text-left rounded-xl border border-emerald-200 bg-white px-3 py-2 hover:border-emerald-300 hover:shadow-sm transition-all"
+                            className="text-left rounded-xl border border-violet-200 bg-white px-3 py-2 hover:border-violet-300 hover:shadow-sm transition-all"
                           >
                             <div className="flex items-center gap-2">
                               <div
@@ -1516,7 +1516,7 @@ export default function Dashboard() {
                                 <p className="text-[11px] text-muted-foreground mt-1">
                                   {shared.dayLabel} • {shared.mealLabel} • {shared.people.join(" + ")}
                                 </p>
-                                <p className="text-[11px] font-semibold text-emerald-700 mt-1">
+                                <p className="text-[11px] font-semibold text-violet-700 mt-1">
                                   Podgląd przepisu ({shared.servings} por.)
                                 </p>
                               </div>
@@ -1560,7 +1560,7 @@ export default function Dashboard() {
                         key={meal.id}
                         className={cn(
                           "flex items-center justify-between group rounded-lg border p-2 transition-colors",
-                          meal.isEaten ? "border-emerald-300 bg-emerald-100" : "border-transparent"
+                          meal.isEaten ? "border-violet-300 bg-violet-100" : "border-transparent"
                         )}
                       >
                         <div className="flex items-center gap-2.5 min-w-0">
@@ -1742,8 +1742,8 @@ export default function Dashboard() {
 
           <div className="flex-1 overflow-y-auto py-4 space-y-4">
             {frequentAddonDefinitions.length > 0 && (
-              <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-3">
-                <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700">Najczęstsze dodatki (opcjonalnie)</p>
+              <div className="rounded-xl border border-violet-200 bg-violet-50/60 p-3">
+                <p className="text-xs font-semibold uppercase tracking-wider text-violet-700">Najczęstsze dodatki (opcjonalnie)</p>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {frequentAddonDefinitions.map((addon: any) => {
                     const isAlreadyAdded = editingMealIngredients.some((item: any) => Number(item.ingredientId) === Number(addon.ingredientId) && item.isFrequentAddon);
@@ -1753,7 +1753,7 @@ export default function Dashboard() {
                         type="button"
                         size="sm"
                         variant={isAlreadyAdded ? "secondary" : "outline"}
-                        className={cn("h-8", isAlreadyAdded && "border-emerald-300 bg-emerald-100 text-emerald-900")}
+                        className={cn("h-8", isAlreadyAdded && "border-violet-300 bg-violet-100 text-violet-900")}
                         onClick={() => addFrequentAddonToEdit(addon)}
                       >
                         + {Math.round(getAddonIncrementAmount(addon))}g {addon.ingredient?.name || "Składnik"}
@@ -1769,7 +1769,7 @@ export default function Dashboard() {
                 key={idx}
                 className={cn(
                   "flex gap-2 items-start bg-secondary/20 p-3 rounded-xl border border-transparent max-sm:gap-1.5 max-sm:p-2",
-                  item.isFrequentAddon && "border-emerald-300 bg-emerald-50/50"
+                  item.isFrequentAddon && "border-violet-300 bg-violet-50/50"
                 )}
               >
                 <div className="min-w-0 flex-1">
@@ -1816,7 +1816,7 @@ export default function Dashboard() {
                     </PopoverContent>
                   </Popover>
                   {item.isFrequentAddon && (
-                    <span className="mt-1 inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-800">
+                    <span className="mt-1 inline-flex rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-semibold text-violet-800">
                       Najczęstszy dodatek
                     </span>
                   )}
