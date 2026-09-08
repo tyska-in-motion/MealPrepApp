@@ -725,7 +725,7 @@ export function RecipeView({
               <ul className={compact ? "space-y-1 text-xs" : "space-y-2"}>
                 {ingredientRows.map(({ ri, isFrequentAddon, scalingIngredient }: any, idx: number) => {
                   const ingredientItemClass = isFrequentAddon
-                    ? "border-emerald-300 bg-emerald-50/70"
+                    ? "border-violet-300 bg-violet-50/70"
                     : "border-transparent bg-secondary/50";
 
                   return (
@@ -740,7 +740,7 @@ export function RecipeView({
                       <span className="font-semibold min-w-0 break-words pr-2">
                         {ri.ingredient?.name}
                         {isFrequentAddon && (
-                          <span className="ml-2 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-800">
+                          <span className="ml-2 rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-semibold text-violet-800">
                             Dodatek
                           </span>
                         )}
@@ -753,7 +753,7 @@ export function RecipeView({
                       const sharedInfo = getSharedAddonPersonInfo(ri);
                       if (!sharedInfo) return null;
                       return (
-                        <span className="mt-1 block text-[10px] leading-tight text-emerald-700">
+                        <span className="mt-1 block text-[10px] leading-tight text-violet-700">
                           {sharedInfo}
                         </span>
                       );
