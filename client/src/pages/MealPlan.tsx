@@ -739,6 +739,8 @@ export default function MealPlan({ mode = "plan" }: { mode?: "plan" | "shared"; 
       .map(i => ({
         ingredientId: Number(i.ingredientId),
         amount: convertDisplayedAmountToStoredAmount(i, entryServings, recipeServings),
+        // Keep the recipe snapshot as the scaling base and persist only this person's final override.
+        overrideAmount: viewingMeal?.portionMode === "INDIVIDUAL" ? (Number(i.amount) || 0) : null,
         scalingType: i.scalingType || (i.isFrequentAddon ? "FIXED" : "LINEAR"),
       }));
 

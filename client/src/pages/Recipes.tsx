@@ -14,6 +14,7 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { calculateNutritionAmount, calculatePurchaseAmount, type ScalingType } from "@shared/scaling";
+import { validatePercentageAllocations, type PortionMode } from "@shared/meal-portions";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -377,6 +378,8 @@ export default function Recipes() {
   const [addToSharedBatches, setAddToSharedBatches] = useState(false);
   const [selectedFrequentAddons, setSelectedFrequentAddons] = useState<Record<"A" | "B", Record<string, number>>>({ A: {}, B: {} });
   const [selectedRecipeServings, setSelectedRecipeServings] = useState(1);
+  const [portionMode, setPortionMode] = useState<PortionMode>("SCALED");
+  const [batchAllocations, setBatchAllocations] = useState({ A: 50, B: 50 });
   const [selectedSuggestedRecipes, setSelectedSuggestedRecipes] = useState<Record<string, number>>({});
   const [suggestedRecipeSearch, setSuggestedRecipeSearch] = useState("");
   const [openIngredientPopoverIndex, setOpenIngredientPopoverIndex] = useState<number | null>(null);
@@ -446,7 +449,7 @@ export default function Recipes() {
 
     const isOccupiedA = dayPlan?.entries.some((e: any) => e.mealType === selectedMealType && (e.person || "A") === "A");
     const isOccupiedB = dayPlan?.entries.some((e: any) => e.mealType === selectedMealType && (e.person || "A") === "B");
-    const targetPeople = addForBothPeople ? (["A", "B"] as const) : ([selectedPerson] as const);
+    const targetPeople = (portionMode === "BATCH_ALLOCATION" || addForBothPeople) ? (["A", "B"] as const) : ([selectedPerson] as const);
     const hasCollision = targetPeople.some((person) => person === "A" ? isOccupiedA : isOccupiedB);
     if (hasCollision) {
       toast({
@@ -477,9 +480,18 @@ export default function Recipes() {
       }))
       .filter((addon: any) => addon.amount > 0);
 
+    if (portionMode === "BATCH_ALLOCATION" && !validatePercentageAllocations([
+      { person: "A", percentage: batchAllocations.A }, { person: "B", percentage: batchAllocations.B },
+    ])) {
+      toast({ variant: "destructive", title: "Nieprawidłowy podział", description: "Udziały obu osób muszą dawać dokładnie 100%." });
+      return;
+    }
+
     try {
       for (const person of targetPeople) {
-        const effectiveServings = addForBothPeople
+        const effectiveServings = portionMode === "BATCH_ALLOCATION"
+          ? selectedRecipeServings * batchAllocations[person] / 100
+          : addForBothPeople
           ? getRecipeDefaultServingsForPerson(recipeToPlan, person)
           : selectedRecipeServings;
 
@@ -490,7 +502,10 @@ export default function Recipes() {
           person,
           isEaten: false,
           servings: effectiveServings,
-          createSharedBatch: addToSharedBatches,
+          portionMode,
+          allocationPercentage: portionMode === "BATCH_ALLOCATION" ? batchAllocations[person] : null,
+          createSharedBatch: portionMode === "BATCH_ALLOCATION" || addToSharedBatches,
+          sharedBatchServings: portionMode === "BATCH_ALLOCATION" ? selectedRecipeServings : undefined,
         });
 
         const selectedAddons = getSelectedAddonsForPerson(person);
@@ -545,6 +560,8 @@ export default function Recipes() {
       setAddForBothPeople(false);
       setAddToSharedBatches(false);
       setSelectedRecipeServings(1);
+      setPortionMode("SCALED");
+      setBatchAllocations({ A: 50, B: 50 });
       setSelectedSuggestedRecipes({});
       const successMessage = addForBothPeople
         ? "Przepis dodany do planu dla Tysi i Matiego."
@@ -2073,6 +2090,8 @@ export default function Recipes() {
             setAddToSharedBatches(false);
             setSelectedPerson("A");
             setSelectedRecipeServings(1);
+            setPortionMode("SCALED");
+            setBatchAllocations({ A: 50, B: 50 });
             setSelectedSuggestedRecipes({});
           }
         }}
@@ -2112,9 +2131,15 @@ export default function Recipes() {
               </Select>
             </div>
             <div className="grid gap-2">
-              <label className="text-sm font-medium">Liczba porcji przepisu</label>
+              <label className="text-sm font-medium">Sposób planowania</label>
+              <Select value={portionMode} onValueChange={(value) => setPortionMode(value as PortionMode)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent><SelectItem value="SCALED">Porcja</SelectItem><SelectItem value="INDIVIDUAL">Indywidualne ilości</SelectItem><SelectItem value="BATCH_ALLOCATION">Wspólny batch i podział</SelectItem></SelectContent>
+              </Select>
+              <label className="text-sm font-medium">{portionMode === "BATCH_ALLOCATION" ? "Przygotuj porcji" : "Liczba porcji"}</label>
               <Input type="number" step="any" min="0.25" value={selectedRecipeServings} onChange={(e) => setSelectedRecipeServings(Math.max(0.25, Number(e.target.value) || 1))} />
             </div>
+            {portionMode === "BATCH_ALLOCATION" && <div className="grid gap-2 rounded-lg border p-3"><p className="text-sm font-medium">Podział gotowego dania</p>{(["A", "B"] as const).map((person) => <label key={person} className="flex items-center justify-between gap-3 text-sm"><span>{personName[person]}</span><Input className="w-24" type="number" step="any" min="0" max="100" value={batchAllocations[person]} onChange={(e) => setBatchAllocations((current) => ({ ...current, [person]: Number(e.target.value) || 0 }))} /></label>)}<p className={validatePercentageAllocations([{ person: "A", percentage: batchAllocations.A }, { person: "B", percentage: batchAllocations.B }]) ? "text-xs text-muted-foreground" : "text-xs text-destructive"}>Suma: {batchAllocations.A + batchAllocations.B}%</p></div>}
 
             {suggestedRecipeOptionsForPlan.length > 0 && (
               <div className="grid gap-2">

@@ -8,6 +8,7 @@
     "build": "npm run check:conflicts && vite build && tsx script/build.ts",
     "start": "NODE_ENV=production node dist/index.cjs",
     "check": "tsc",
+    "test:meal-portions": "tsx tests/meal-portions.test.ts",
     "db:push": "drizzle-kit push",
     "check:conflicts": "bash -lc 'if command -v rg >/dev/null 2>&1; then ! rg -n \"^(<<<<<<<|=======|>>>>>>>)\" client server shared; else ! grep -R -n -E \"^(<<<<<<<|=======|>>>>>>>)\" client server shared; fi'"
   },
