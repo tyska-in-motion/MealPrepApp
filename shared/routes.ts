@@ -34,8 +34,8 @@ const stepThresholdSchema = z.object({
 
 const recipeIngredientInputSchema = z.object({
   ingredientId: z.number(),
-  amount: z.number(),
-  baseAmount: z.number().optional(),
+  amount: z.number().positive(),
+  baseAmount: z.number().positive().optional(),
   unit: z.string().optional(),
   alternativeAmount: z.number().min(0).optional(),
   alternativeUnit: z.string().optional(),
@@ -148,13 +148,13 @@ export const api = {
       method: 'POST' as const,
       path: '/api/recipes',
       input: insertRecipeSchema.extend({
+        name: z.string().min(1),
         instructionSteps: z.array(instructionStepSchema).optional(),
         servings: z.number().min(0.1).default(1),
-        defaultServingsA: z.number().min(0.1).default(1),
-        defaultServingsB: z.number().min(0.1).default(1.5),
+        preparationType: z.enum(["INDIVIDUAL", "BATCH"]).default("INDIVIDUAL"),
         suggestedRecipeIds: z.array(z.number()).optional().default([]),
         suggestedRecipes: z.array(suggestedRecipeInputSchema).optional().default([]),
-        ingredients: z.array(recipeIngredientInputSchema),
+        ingredients: z.array(recipeIngredientInputSchema).min(1),
         frequentAddons: z.array(z.object({
           ingredientId: z.number(),
           amount: z.number(),
@@ -195,13 +195,13 @@ export const api = {
       method: 'PATCH' as const,
       path: '/api/recipes/:id',
       input: insertRecipeSchema.extend({
+        name: z.string().min(1),
         instructionSteps: z.array(instructionStepSchema).optional(),
         servings: z.number().min(0.1).optional(),
-        defaultServingsA: z.number().min(0.1).optional(),
-        defaultServingsB: z.number().min(0.1).optional(),
+        preparationType: z.enum(["INDIVIDUAL", "BATCH"]).optional(),
         suggestedRecipeIds: z.array(z.number()).optional().default([]),
         suggestedRecipes: z.array(suggestedRecipeInputSchema).optional().default([]),
-        ingredients: z.array(recipeIngredientInputSchema),
+        ingredients: z.array(recipeIngredientInputSchema).min(1),
         frequentAddons: z.array(z.object({
           ingredientId: z.number(),
           amount: z.number(),

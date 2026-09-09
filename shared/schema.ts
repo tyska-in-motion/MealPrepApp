@@ -95,7 +95,12 @@ export const recipes = pgTable("recipes", {
   instructionSteps: jsonb("instruction_steps").$type<InstructionStep[]>(),
   prepTime: integer("prep_time"), // minutes
   imageUrl: text("image_url"),
+  // `servings` is the number of base portions represented by the recipe.
+  // It remains named this way to keep meal-plan scaling backwards compatible.
   servings: real("servings").notNull().default(1),
+  preparationType: text("preparation_type", { enum: ["INDIVIDUAL", "BATCH"] }).notNull().default("INDIVIDUAL"),
+  // Legacy per-person defaults are retained only for backwards-compatible reads.
+  // Recipe creation/editing deliberately does not use them.
   defaultServingsA: real("default_servings_a").notNull().default(1),
   defaultServingsB: real("default_servings_b").notNull().default(1.5),
   createdAt: timestamp("created_at").defaultNow(),
