@@ -80,6 +80,7 @@ async function ensureBaseTables() {
     prep_time integer,
     image_url text,
     servings real NOT NULL DEFAULT 1,
+    preparation_type text NOT NULL DEFAULT 'INDIVIDUAL',
     default_servings_a real NOT NULL DEFAULT 1,
     default_servings_b real NOT NULL DEFAULT 1.5,
     created_at timestamp DEFAULT now()
@@ -334,6 +335,10 @@ export async function ensureDbCompat() {
   await pool.query(`ALTER TABLE recipes ALTER COLUMN default_servings_b SET NOT NULL`);
   await pool.query(`ALTER TABLE recipes ALTER COLUMN default_servings_a SET DEFAULT 1`);
   await pool.query(`ALTER TABLE recipes ALTER COLUMN default_servings_b SET DEFAULT 1.5`);
+  await pool.query(`ALTER TABLE recipes ADD COLUMN IF NOT EXISTS preparation_type text DEFAULT 'INDIVIDUAL'`);
+  await pool.query(`UPDATE recipes SET preparation_type = 'INDIVIDUAL' WHERE preparation_type IS NULL OR preparation_type NOT IN ('INDIVIDUAL', 'BATCH')`);
+  await pool.query(`ALTER TABLE recipes ALTER COLUMN preparation_type SET NOT NULL`);
+  await pool.query(`ALTER TABLE recipes ALTER COLUMN preparation_type SET DEFAULT 'INDIVIDUAL'`);
 
 
   // Backward-compatible self-healing for ingredient scaling migration

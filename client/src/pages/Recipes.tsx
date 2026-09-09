@@ -17,6 +17,7 @@ import { calculateNutritionAmount, calculatePurchaseAmount, type ScalingType } f
 import { validatePercentageAllocations, type PortionMode } from "@shared/meal-portions";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
@@ -56,16 +57,15 @@ const createRecipeSchema = z.object({
   comments: z.string().optional(),
   instructionSteps: z.array(z.any()).optional(),
   prepTime: z.coerce.number().min(0),
-  servings: z.coerce.number().min(0.1).default(1),
-  defaultServingsA: z.coerce.number().min(0.1).default(1),
-  defaultServingsB: z.coerce.number().min(0.1).default(1.5),
+  servings: z.coerce.number().positive("Bazowa liczba porcji musi być większa od 0").default(1),
+  preparationType: z.enum(["INDIVIDUAL", "BATCH"]).default("INDIVIDUAL"),
   imageUrl: z.string().optional().or(z.literal("")),
   suggestedRecipes: z.array(z.object({ recipeId: z.coerce.number(), servings: z.coerce.number().min(0.01) })).optional().default([]),
   ingredients: z.array(z.object({
     ingredientId: z.coerce.number(),
     groupName: z.string().max(100).optional(),
-    amount: localizedNumber(z.number().min(0)).optional().default(0),
-    baseAmount: localizedNumber(z.number().min(0)).optional(),
+    amount: localizedNumber(z.number().positive("Ilość musi być większa od 0")).optional().default(0),
+    baseAmount: localizedNumber(z.number().positive("Ilość musi być większa od 0")).optional(),
     unit: z.string().min(1).default("g"),
     alternativeAmount: localizedNumber(z.number().min(0)).optional(),
     alternativeUnit: z.string().optional(),
@@ -594,8 +594,7 @@ export default function Recipes() {
       comments: "",
       prepTime: 15,
       servings: 1,
-      defaultServingsA: 1,
-      defaultServingsB: 1.5,
+      preparationType: "INDIVIDUAL",
       imageUrl: "",
       suggestedRecipes: [],
       ingredients: [{ ingredientId: 0, amount: 100, baseAmount: 100, unit: "g", alternativeAmount: undefined, alternativeUnit: "", scalingType: "LINEAR", scalingFormula: "", stepThresholds: [], mealPrep: false, mealPrepMaxDaysBefore: 1, mealPrepNotes: "" }],
@@ -777,8 +776,7 @@ export default function Recipes() {
       instructionSteps: recipe.instructionSteps || [],
       prepTime: recipe.prepTime,
       servings: recipe.servings || 1,
-      defaultServingsA: Number(recipe.defaultServingsA) || 1,
-      defaultServingsB: Number(recipe.defaultServingsB) || 1.5,
+      preparationType: recipe.preparationType === "BATCH" ? "BATCH" : "INDIVIDUAL",
       imageUrl: recipe.imageUrl || "",
       suggestedRecipes: ((recipe.suggestedRecipes || []).length > 0 ? recipe.suggestedRecipes : (recipe.suggestedRecipeIds || []).map((id: any) => ({ recipeId: Number(id), servings: 1 })))
         .map((item: any) => ({ recipeId: Number(item.recipeId), servings: Number(item.servings) || 1 }))
@@ -848,8 +846,7 @@ export default function Recipes() {
       instructionSteps: [],
       prepTime: 15,
       servings: 1,
-      defaultServingsA: 1,
-      defaultServingsB: 1.5,
+      preparationType: "INDIVIDUAL",
       imageUrl: "",
       suggestedRecipes: [],
       ingredients: [{ ingredientId: 0, amount: 100, baseAmount: 100, unit: "g", alternativeAmount: undefined, alternativeUnit: "", scalingType: "LINEAR", scalingFormula: "", stepThresholds: [], mealPrep: false, mealPrepMaxDaysBefore: 1, mealPrepNotes: "" }],
@@ -877,8 +874,7 @@ export default function Recipes() {
       prepTime: recipe.prepTime || 0,
       imageUrl: recipe.imageUrl || "",
       servings: Number(recipe.servings) || 1,
-      defaultServingsA: Number(recipe.defaultServingsA) || 1,
-      defaultServingsB: Number(recipe.defaultServingsB) || 1.5,
+      preparationType: recipe.preparationType === "BATCH" ? "BATCH" : "INDIVIDUAL",
       suggestedRecipes: ((recipe.suggestedRecipes || []).length > 0 ? recipe.suggestedRecipes : (recipe.suggestedRecipeIds || []).map((id: any) => ({ recipeId: Number(id), servings: 1 })))
         .map((item: any) => ({ recipeId: Number(item.recipeId), servings: Number(item.servings) || 1 }))
         .filter((item: any) => Number.isFinite(item.recipeId) && item.recipeId > 0),
@@ -1088,18 +1084,30 @@ export default function Recipes() {
                 </div>
                 
                 <div>
-                  <label className="text-sm font-medium mb-1 block">Liczba porcji</label>
+                  <label className="text-sm font-medium mb-1 block">Bazowa liczba porcji</label>
                   <Input type="number" step="0.1" {...form.register("servings")} min="0.1" />
+                  {form.formState.errors.servings && <p className="text-red-500 text-xs mt-1">{form.formState.errors.servings.message}</p>}
                 </div>
 
-                <div>
-                  <label className="text-sm font-medium mb-1 block">Domyślne porcje Tysia</label>
-                  <Input type="number" step="0.1" min="0.1" {...form.register("defaultServingsA")} />
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium mb-1 block">Domyślne porcje Mati</label>
-                  <Input type="number" step="0.1" min="0.1" {...form.register("defaultServingsB")} />
+                <div className="col-span-2 space-y-2">
+                  <label className="text-sm font-medium block">Sposób przygotowania</label>
+                  <RadioGroup
+                    value={form.watch("preparationType")}
+                    onValueChange={(value) => form.setValue("preparationType", value as "INDIVIDUAL" | "BATCH", { shouldDirty: true })}
+                    className="grid gap-2 sm:grid-cols-2"
+                  >
+                    <label className="flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors hover:bg-muted/50">
+                      <RadioGroupItem value="INDIVIDUAL" className="mt-0.5" />
+                      <span><span className="block font-medium">Porcje przygotowywane osobno</span><span className="block text-muted-foreground">Każda porcja jest przygotowywana osobno.</span></span>
+                    </label>
+                    <label className="flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors hover:bg-muted/50">
+                      <RadioGroupItem value="BATCH" className="mt-0.5" />
+                      <span><span className="block font-medium">Przygotowuję całość i dzielę na porcje</span><span className="block text-muted-foreground">Przygotowujesz cały przepis, a potem dzielisz gotowe danie.</span></span>
+                    </label>
+                  </RadioGroup>
+                  {form.watch("preparationType") === "BATCH" && (
+                    <p className="rounded-lg bg-muted px-3 py-2 text-muted-foreground">Ten przepis będzie przygotowywany jako jeden batch. Sposób podziału ustawisz podczas dodawania go do mealplanu.</p>
+                  )}
                 </div>
 
                 <div className="col-span-2">

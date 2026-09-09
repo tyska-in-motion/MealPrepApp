@@ -242,6 +242,7 @@ export class DatabaseStorage implements IStorage {
       prepTime: recipe.prepTime,
       imageUrl: recipe.imageUrl,
       servings: recipe.servings,
+      preparationType: recipe.preparationType,
       defaultServingsA: recipe.defaultServingsA,
       defaultServingsB: recipe.defaultServingsB,
       ingredients: (recipe.ingredients || []).map((ingredient: any) => ({ ...ingredient })),
@@ -481,6 +482,7 @@ export class DatabaseStorage implements IStorage {
         prepTime: true,
         imageUrl: true,
         servings: true,
+        preparationType: true,
         defaultServingsA: true,
         defaultServingsB: true,
         suggestedRecipeIds: true,
@@ -569,6 +571,7 @@ export class DatabaseStorage implements IStorage {
         prepTime: true,
         imageUrl: true,
         servings: true,
+        preparationType: true,
         defaultServingsA: true,
         defaultServingsB: true,
         suggestedRecipeIds: true,
@@ -717,8 +720,7 @@ export class DatabaseStorage implements IStorage {
       suggestedRecipeIds: req.suggestedRecipeIds || [],
       suggestedRecipes: (req as any).suggestedRecipes || ((req.suggestedRecipeIds || []).map((recipeId: number) => ({ recipeId, servings: 1 }))),
       servings: req.servings || 1,
-      defaultServingsA: Number((req as any).defaultServingsA) || 1,
-      defaultServingsB: Number((req as any).defaultServingsB) || 1.5,
+      preparationType: (req as any).preparationType || "INDIVIDUAL",
     }).returning();
 
     if (req.ingredients.length > 0) {
@@ -800,8 +802,7 @@ export class DatabaseStorage implements IStorage {
         suggestedRecipeIds: req.suggestedRecipeIds || [],
         suggestedRecipes: (req as any).suggestedRecipes || ((req.suggestedRecipeIds || []).map((recipeId: number) => ({ recipeId, servings: 1 }))),
         servings: req.servings || 1,
-        defaultServingsA: Number((req as any).defaultServingsA) || 1,
-        defaultServingsB: Number((req as any).defaultServingsB) || 1.5,
+        preparationType: (req as any).preparationType || existingRecipe.preparationType || "INDIVIDUAL",
       })
       .where(eq(recipes.id, id));
 
